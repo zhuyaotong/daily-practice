@@ -16,6 +16,7 @@
         <module>spring-transactional</module>
         <module>concurrency</module>
         <module>effective</module>
+        <module>spring-boot</module>
     </modules>
 
     <properties>
