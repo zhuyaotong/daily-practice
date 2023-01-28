@@ -21,6 +21,7 @@ public class UserServiceImpl implements UserService {
     private SubUserService subUserService;
 
     @Override
+    // 异常不是RuntimeException的要这样： @Transactional(rollbackFor = Exception.class)
     @Transactional
     public int createUserRight1(String name) throws IOException {
         createUserPrivate(new UserEntity(name));
