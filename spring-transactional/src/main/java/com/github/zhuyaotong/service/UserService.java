@@ -10,6 +10,8 @@ public interface UserService {
 
     void createUserRight2(UserEntity entity);
 
+    int createUserRight3(String name);
+
     int getUserCount(String name);
 
 

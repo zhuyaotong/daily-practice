@@ -45,12 +45,19 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    @Transactional
+    public int createUserRight3(String name) {
+        createUserPrivate(new UserEntity(name));
+        return userRepository.findByName(name).size();
+    }
+
     private void createMainUser(UserEntity entity) {
         userRepository.save(entity);
         log.info("createMainUser finish");
     }
 
-    public void createUserPrivate(UserEntity entity) throws IOException {
+    public void createUserPrivate(UserEntity entity) {
         userRepository.save(entity);
         if (entity.getName().contains("test")) {
         }
