@@ -17,6 +17,7 @@
         <module>concurrency</module>
         <module>effective</module>
         <module>spring-boot</module>
+        <module>design-patterns</module>
     </modules>
 
     <properties>
