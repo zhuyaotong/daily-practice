@@ -18,6 +18,7 @@
         <module>effective</module>
         <module>spring-boot</module>
         <module>design-patterns</module>
+        <module>leetcode</module>
     </modules>
 
     <properties>
