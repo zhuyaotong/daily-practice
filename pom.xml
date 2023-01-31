@@ -19,6 +19,7 @@
         <module>spring-boot</module>
         <module>design-patterns</module>
         <module>leetcode</module>
+        <module>oauth-server</module>
     </modules>
 
     <properties>
