@@ -20,6 +20,7 @@
         <module>design-patterns</module>
         <module>leetcode</module>
         <module>oauth-server</module>
+        <module>ddd</module>
     </modules>
 
     <properties>
