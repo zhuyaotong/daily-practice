@@ -1,9 +1,6 @@
 package com.github.zhuyaotong.p3c;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Collect {
@@ -23,14 +20,52 @@ public class Collect {
 //        Map<Integer, String> map = Arrays.stream(departments)
 //                .collect(Collectors.toMap(String::hashCode, str -> str));
 
-        List<Pair<String, Double>> pairArrayList = new ArrayList<>(2);
-        pairArrayList.add(new Pair<>("version1", 8.3));
-        pairArrayList.add(new Pair<>("version2", null));
+//        List<Pair<String, Double>> pairArrayList = new ArrayList<>(2);
+//        pairArrayList.add(new Pair<>("version1", 8.3));
+//        pairArrayList.add(new Pair<>("version2", null));
         // 抛出 NullPointerException 异常
-        Map<String, Double> map = pairArrayList.stream()
+//        Map<String, Double> map = pairArrayList.stream()
 //                .filter(p -> p.getKey() != null && p.getValue() != null)
-                .collect(Collectors.toMap(Pair::getKey, Pair::getValue, (v1, v2) -> v2));
-        System.out.println(map);
+//                .collect(Collectors.toMap(Pair::getKey, Pair::getValue, (v1, v2) -> v2));
+//        System.out.println(map);
+
+//        List<String> list = new ArrayList<>(2);
+//        list.add("guan");
+//        list.add("bao");
+//        String[] array = list.toArray(new String[0]);
+//        System.out.println(Arrays.toString(array));
+
+//        String[] str = new String[]{"yang", "guan", "bao"};
+//        List list = Arrays.asList(str);
+//        list.add("yangguanbao");
+//        str[0] = "change";
+//        System.out.println(Arrays.toString(str));
+
+//        List<String> generics = null;
+//        List notGenerics = new ArrayList(10);
+//        notGenerics.add(new Object());
+//        notGenerics.add(new Integer(1));
+//        generics = notGenerics;
+        // 此处抛出 ClassCastException 异常
+//        String string = generics.get(0);
+
+        List<String> list = new ArrayList<>();
+        list.add("1");
+        list.add("2");
+//        Iterator<String> iterator = list.iterator();
+//        while (iterator.hasNext()) {
+//            String item = iterator.next();
+//            if (删除元素的条件) {
+//                iterator.remove();
+//            }
+//        }
+
+        for (String item : list) {
+            if ("2".equals(item)) {
+                list.remove(item);
+            }
+        }
+        System.out.println(list);
     }
 
 }
