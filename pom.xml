@@ -22,6 +22,7 @@
         <module>oauth-server</module>
         <module>ddd</module>
         <module>refactoring</module>
+        <module>mybatis-plus</module>
     </modules>
 
     <properties>
