@@ -3,6 +3,7 @@ package com.github.zhuyaotong.mybatisplus.entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -48,5 +49,8 @@ public class Coupon {
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
+
+    @TableField("is_deleted")
+    private Integer deleteStatus;
 
 }

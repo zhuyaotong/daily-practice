@@ -1,17 +1,17 @@
 package com.github.zhuyaotong.mybatisplus.service;
 
+import com.github.zhuyaotong.mybatisplus.BaseTest;
 import com.github.zhuyaotong.mybatisplus.entity.Coupon;
 import com.github.zhuyaotong.mybatisplus.entity.CouponRecord;
 import com.github.zhuyaotong.mybatisplus.entity.QueryEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
-@SpringBootTest
-public class CouponRecordServiceTest {
+
+public class CouponRecordServiceTest extends BaseTest {
 
     @Autowired
     private CouponRecordService couponRecordService;
