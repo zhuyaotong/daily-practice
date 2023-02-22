@@ -23,6 +23,7 @@
         <module>ddd</module>
         <module>refactoring</module>
         <module>mybatis-plus</module>
+        <module>thinking-in-java</module>
     </modules>
 
     <properties>
