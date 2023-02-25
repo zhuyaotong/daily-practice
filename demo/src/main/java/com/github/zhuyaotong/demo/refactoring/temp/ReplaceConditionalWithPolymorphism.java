@@ -171,3 +171,36 @@ class Order {
         System.out.println("Total due: " + sum);
     }
 }
+
+// File Class.java
+//class Class {
+//    public Class(String s) {
+////        ...
+//    }
+//}
+//
+//// File AnotherClass.java
+//class AnotherClass {
+//    public void method() {
+//        Class aClass = new Class("string");
+//    }
+//}
+
+// File Class.java
+class Class {
+    private Class(String s) {
+//        ...
+    }
+
+    public static Class createClass(String s) {
+        return new Class(s);
+    }
+}
+
+// File AnotherClass.java
+class AnotherClass {
+    public void method() {
+        Class aClass = Class.createClass("string");
+    }
+}
+
