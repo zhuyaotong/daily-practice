@@ -55,3 +55,16 @@ public class Demo {
         }
     }
 }
+
+enum Answer {
+    YES {
+        @Override public String toString() {
+            return "yes";
+        }
+    },
+
+    NO,
+    MAYBE
+}
+
+enum Suit { CLUBS, HEARTS, SPADES, DIAMONDS }
