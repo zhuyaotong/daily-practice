@@ -2,6 +2,9 @@ package com.github.zhuyaotong.concurrency;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Singleton {
   static Singleton instance;
@@ -331,4 +334,232 @@ class Account7 {
       }
     }
   }
+}
+
+class Counter {
+
+  private long value;
+
+  synchronized long get() {
+    return value;
+  }
+
+  synchronized long addOne() {
+    return ++value;
+  }
+}
+
+class SafeWM {
+
+  // 库存上限
+  private final AtomicLong upper = new AtomicLong(0);
+
+  // 库存下限
+  private final AtomicLong lower = new AtomicLong(0);
+
+  // 设置库存上限
+  void setUpper(long v) {
+    upper.set(v);
+  }
+
+  // 设置库存下限
+  void setLower(long v) {
+    lower.set(v);
+  }
+
+  // 省略其他业务代码
+}
+
+class SafeWM2 {
+
+  // 库存上限
+  private final AtomicLong upper = new AtomicLong(0);
+
+  // 库存下限
+  private final AtomicLong lower = new AtomicLong(0);
+
+  // 设置库存上限
+  void setUpper(long v) {
+
+    // 检查参数合法性
+    if (v < lower.get()) {
+      throw new IllegalArgumentException();
+    }
+
+    upper.set(v);
+  }
+
+  // 设置库存下限
+  void setLower(long v) {
+
+    // 检查参数合法性
+    if (v > upper.get()) {
+      throw new IllegalArgumentException();
+    }
+
+    lower.set(v);
+  }
+
+  // 省略其他业务代码
+}
+
+class SafeWM3 {
+
+  // 库存上限
+  private final AtomicLong upper = new AtomicLong(0);
+
+  // 库存下限
+  private final AtomicLong lower = new AtomicLong(0);
+
+  // 设置库存上限
+  synchronized void setUpper(long v) {
+
+    // 检查参数合法性
+    if (v < lower.get()) {
+      throw new IllegalArgumentException();
+    }
+
+    upper.set(v);
+  }
+
+  // 设置库存下限
+  synchronized void setLower(long v) {
+
+    // 检查参数合法性
+    if (v > upper.get()) {
+      throw new IllegalArgumentException();
+    }
+
+    lower.set(v);
+  }
+
+  // 省略其他业务代码
+}
+
+class SafeWM4 {
+
+  private Boundary boundary;
+
+  public void setBoundary(final Boundary boundary) {
+    this.boundary = boundary;
+  }
+
+  // 省略其他业务代码
+}
+
+class Boundary {
+
+  private final long lower;
+  private final long upper;
+
+  public Boundary(long lower, long upper) {
+    if (lower >= upper) {
+      // throw exception
+    }
+
+    this.lower = lower;
+    this.upper = upper;
+  }
+}
+
+class X2 {
+
+  private final Lock rtl = new ReentrantLock();
+
+  int value;
+
+  public void addOne() {
+    // 获取锁
+    rtl.lock();
+
+    try {
+      value += 1;
+    } finally {
+      // 保证锁能释放
+      rtl.unlock();
+    }
+  }
+}
+
+class SampleLock {
+
+  volatile int state;
+
+  // 加锁
+  void lock() {
+    // 省略代码无数
+    state = 1;
+  }
+
+  // 解锁
+  void unlock() {
+    // 省略代码无数
+    state = 0;
+  }
+}
+
+class X3 {
+
+  private final Lock rtl = new ReentrantLock();
+
+  int value;
+
+  public int get() {
+    // 获取锁
+    rtl.lock(); // ②
+
+    try {
+      return value;
+
+    } finally {
+      // 保证锁能释放
+      rtl.unlock();
+    }
+  }
+
+  public void addOne() {
+    // 获取锁
+    rtl.lock();
+
+    try {
+      value = 1 + get(); // ①
+
+    } finally {
+      // 保证锁能释放
+      rtl.unlock();
+    }
+  }
+}
+
+class Account8 {
+
+  private int balance;
+
+  private final Lock lock = new ReentrantLock();
+
+  // 转账
+  void transfer(Account8 tar, int amt) {
+
+    while (true) {
+
+      if (this.lock.tryLock()) {
+
+        try {
+
+          if (tar.lock.tryLock()) {
+            try {
+              this.balance -= amt;
+              tar.balance += amt;
+
+            } finally {
+              tar.lock.unlock();
+            }
+          } // if
+
+        } finally {
+          this.lock.unlock();
+        }
+      } // if
+    } // while
+  } // transfer
 }
