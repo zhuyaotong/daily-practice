@@ -1,10 +1,12 @@
 package com.github.zhuyaotong.concurrency;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import static java.util.concurrent.TimeUnit.MINUTES;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -337,5 +339,211 @@ class MR extends RecursiveTask<Map<String, Long>> {
 
     // 输出结果
     result.forEach((k, v) -> System.out.println(k + ":" + v));
+  }
+}
+
+final class Account9 {
+
+  private final StringBuffer user;
+
+  public Account9(String user) {
+    this.user = new StringBuffer(user);
+  }
+
+  public StringBuffer getUser() {
+    return this.user;
+  }
+
+  public String toString() {
+    return "user" + user;
+  }
+}
+
+final class Account10 {
+
+  private final String user;
+
+  public Account10(String user) {
+    this.user = new String(user);
+  }
+
+  public String getUser() {
+    return this.user;
+  }
+
+  public String toString() {
+    return "user" + user;
+  }
+}
+
+class ThreadId {
+
+  static final AtomicLong nextId = new AtomicLong(0);
+
+  // 定义ThreadLocal变量
+  static final ThreadLocal<Long> tl = ThreadLocal.withInitial(nextId::getAndIncrement);
+
+  // 此方法会为每个线程分配一个唯一的Id
+  static long get() {
+    return tl.get();
+  }
+}
+
+class SafeDateFormat {
+
+  // 定义ThreadLocal变量
+  static final ThreadLocal<DateFormat> tl =
+      ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+
+  static DateFormat get() {
+    return tl.get();
+  }
+
+  public static void main(String[] args) {
+    // 不同线程执行下面代码
+    // 返回的df是不同的
+    DateFormat df = SafeDateFormat.get();
+    System.out.println(df.format(new Date()));
+  }
+}
+
+class MyThreadLocal<T> {
+
+  Map<Thread, T> locals = new ConcurrentHashMap<>();
+
+  // 获取线程变量
+  T get() {
+    return locals.get(Thread.currentThread());
+  }
+
+  // 设置线程变量
+  void set(T t) {
+    locals.put(Thread.currentThread(), t);
+  }
+}
+
+// 路由信息
+final class Router {
+
+  private final String ip;
+  private final Integer port;
+  public final String iface;
+
+  // 构造函数
+  public Router(String ip, Integer port, String iface) {
+    this.ip = ip;
+    this.port = port;
+    this.iface = iface;
+  }
+
+  // 重写equals方法
+  public boolean equals(Object obj) {
+
+    if (obj instanceof Router) {
+      Router r = (Router) obj;
+
+      return iface.equals(r.iface) && ip.equals(r.ip) && port.equals(r.port);
+    }
+
+    return false;
+  }
+
+  //  public int hashCode() {
+  //    //省略hashCode相关代码
+  //  }
+
+}
+
+// 路由表信息
+class RouterTable {
+
+  // Key:接口名
+  // Value:路由集合
+  ConcurrentHashMap<String, CopyOnWriteArraySet<Router>> rt = new ConcurrentHashMap<>();
+
+  // 路由表是否发生变化
+  volatile boolean changed;
+
+  // 将路由表写入本地文件的线程池
+  ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
+
+  // 启动定时任务
+  // 将变更后的路由表写入本地文件
+  public void startLocalSaver() {
+    ses.scheduleWithFixedDelay(this::autoSave, 1, 1, MINUTES);
+  }
+
+  // 保存路由表到本地文件
+  void autoSave() {
+    if (!changed) {
+      return;
+    }
+
+    changed = false;
+    // 将路由表写入本地文件
+    // 省略其方法实现
+    //    this.save2Local();
+  }
+
+  // 删除路由
+  public void remove(Router router) {
+    Set<Router> set = rt.get(router.iface);
+
+    if (set != null) {
+      set.remove(router);
+      // 路由表已发生变化
+      changed = true;
+    }
+  }
+
+  // 增加路由
+  public void add(Router router) {
+    Set<Router> set = rt.computeIfAbsent(router.iface, r -> new CopyOnWriteArraySet<>());
+
+    set.add(router);
+
+    // 路由表已发生变化
+    changed = true;
+  }
+}
+
+class Singleton2 {
+
+  private static Singleton2 singleton;
+
+  // 构造方法私有化
+  private Singleton2() {}
+
+  // 获取实例（单例）
+  public static synchronized Singleton2 getInstance() {
+
+    if (singleton == null) {
+      singleton = new Singleton2();
+    }
+
+    return singleton;
+  }
+}
+
+class Singleton3 {
+  private static volatile Singleton3 singleton;
+
+  // 构造方法私有化
+  private Singleton3() {}
+
+  // 获取实例（单例）
+  public static Singleton3 getInstance() {
+
+    // 第一次检查
+    if (singleton == null) {
+      synchronized (Singleton3.class) {
+        // 获取锁后二次检查
+        if (singleton == null) {
+          singleton = new Singleton3();
+        }
+      }
+    }
+
+    return singleton;
   }
 }
