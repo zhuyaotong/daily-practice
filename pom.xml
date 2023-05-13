@@ -24,6 +24,7 @@
         <module>refactoring</module>
         <module>mybatis-plus</module>
         <module>thinking-in-java</module>
+        <module>jvm</module>
     </modules>
 
     <properties>
