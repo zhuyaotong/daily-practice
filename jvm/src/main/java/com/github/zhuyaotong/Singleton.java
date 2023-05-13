@@ -1,5 +1,7 @@
 package com.github.zhuyaotong;
 
+import java.lang.reflect.Method;
+
 public class Singleton {
   private Singleton() {}
 
@@ -58,4 +60,260 @@ class NaiveMerchant extends Merchant {
   public Double actionPrice(double price, Customer customer) {
     return null;
   }
+}
+
+abstract class Passenger {
+
+  abstract void passThroughImmigration();
+
+  public static void main(String[] args) {
+    Passenger a = new ChinesePassenger();
+    Passenger b = new ForeignerPassenger();
+    long current = System.currentTimeMillis();
+
+    for (int i = 1; i <= 2_000_000_000; i++) {
+
+      if (i % 100_000_000 == 0) {
+        long temp = System.currentTimeMillis();
+        System.out.println(temp - current);
+
+        current = temp;
+      }
+
+      Passenger c = (i < 1_000_000_000) ? a : b;
+      c.passThroughImmigration();
+    }
+  }
+}
+
+class ChinesePassenger extends Passenger {
+
+  @Override
+  void passThroughImmigration() {}
+}
+
+class ForeignerPassenger extends Passenger {
+
+  @Override
+  void passThroughImmigration() {}
+}
+
+class Foo {
+  private int tryBlock;
+  private int catchBlock;
+  private int finallyBlock;
+  private int methodExit;
+
+  public void test() {
+    try {
+      tryBlock = 0;
+    } catch (Exception e) {
+      catchBlock = 1;
+    } finally {
+      finallyBlock = 2;
+    }
+    methodExit = 3;
+  }
+}
+
+class Foo2 implements AutoCloseable {
+
+  private final String name;
+
+  public Foo2(String name) {
+    this.name = name;
+  }
+
+  @Override
+  public void close() {
+    throw new RuntimeException(name);
+  }
+
+  public static void main(String[] args) {
+    try (Foo2 foo0 = new Foo2("Foo0"); // try-with-resources
+        Foo2 foo1 = new Foo2("Foo1");
+        Foo2 foo2 = new Foo2("Foo2")) {
+
+      throw new RuntimeException("Initial");
+    }
+  }
+}
+
+class Foo3 {
+  private int tryBlock;
+  private int catchBlock;
+  private int finallyBlock;
+  private int methodExit;
+
+  public void test() {
+    for (int i = 0; i < 100; i++) {
+      try {
+        tryBlock = 0;
+        if (i < 50) {
+          continue;
+        } else if (i < 80) {
+          break;
+        } else {
+          return;
+        }
+      } catch (Exception e) {
+        catchBlock = 1;
+      } finally {
+        finallyBlock = 2;
+      }
+    }
+    methodExit = 3;
+  }
+}
+
+class Test {
+
+  public static void target(int i) {
+    new Exception("#" + i).printStackTrace();
+  }
+
+  public static void main(String[] args) throws Exception {
+    Class<?> klass = Class.forName("com.github.zhuyaotong.Test");
+
+    Method method = klass.getMethod("target", int.class);
+
+    method.invoke(null, 0);
+  }
+}
+
+class Test2 {
+
+  public static void target(int i) {
+    new Exception("#" + i).printStackTrace();
+  }
+
+  public static void main(String[] args) throws Exception {
+
+    Class<?> klass = Class.forName("com.github.zhuyaotong.Test2");
+
+    Method method = klass.getMethod("target", int.class);
+
+    for (int i = 0; i < 20; i++) {
+      method.invoke(null, i);
+    }
+  }
+}
+
+class Test3 {
+
+  public static void target(int i) {
+    // 空方法
+  }
+
+  public static void main(String[] args) throws Exception {
+    Class<?> klass = Class.forName("com.github.zhuyaotong.Test3");
+    Method method = klass.getMethod("target", int.class);
+
+    long current = System.currentTimeMillis();
+
+    for (int i = 1; i <= 2_000_000_000; i++) {
+
+      if (i % 100_000_000 == 0) {
+        long temp = System.currentTimeMillis();
+        System.out.println(temp - current);
+        current = temp;
+      }
+
+      method.invoke(null, 128);
+    }
+  }
+}
+
+class Test4 {
+
+  public static void target(int i) {
+    // 空方法
+  }
+
+  public static void main(String[] args) throws Exception {
+    Class<?> klass = Class.forName("com.github.zhuyaotong.Test4");
+    Method method = klass.getMethod("target", int.class);
+
+    Object[] arg = new Object[1]; // 在循环外构造参数数组
+    arg[0] = 128;
+
+    long current = System.currentTimeMillis();
+    for (int i = 1; i <= 2_000_000_000; i++) {
+
+      if (i % 100_000_000 == 0) {
+        long temp = System.currentTimeMillis();
+        System.out.println(temp - current);
+        current = temp;
+      }
+
+      method.invoke(null, arg);
+    }
+  }
+}
+
+// 在运行指令中添加如下两个虚拟机参数：
+// -Djava.lang.Integer.IntegerCache.high=128
+// -Dsun.reflect.noInflation=true
+class Test5 {
+  public static void target(int i) {
+    // 空方法
+  }
+
+  public static void main(String[] args) throws Exception {
+    Class<?> klass = Class.forName("com.github.zhuyaotong.Test5");
+    Method method = klass.getMethod("target", int.class);
+    method.setAccessible(true); // 关闭权限检查
+
+    long current = System.currentTimeMillis();
+    for (int i = 1; i <= 2_000_000_000; i++) {
+
+      if (i % 100_000_000 == 0) {
+        long temp = System.currentTimeMillis();
+        System.out.println(temp - current);
+        current = temp;
+      }
+
+      method.invoke(null, 128);
+    }
+  }
+}
+
+class Test6 {
+
+  public static void target(int i) {
+    // 空方法
+  }
+
+  public static void main(String[] args) throws Exception {
+    Class<?> klass = Class.forName("com.github.zhuyaotong.Test6");
+    Method method = klass.getMethod("target", int.class);
+    method.setAccessible(true); // 关闭权限检查
+    polluteProfile();
+
+    long current = System.currentTimeMillis();
+    for (int i = 1; i <= 2_000_000_000; i++) {
+
+      if (i % 100_000_000 == 0) {
+        long temp = System.currentTimeMillis();
+        System.out.println(temp - current);
+        current = temp;
+      }
+
+      method.invoke(null, 128);
+    }
+  }
+
+  public static void polluteProfile() throws Exception {
+    Method method1 = Test6.class.getMethod("target1", int.class);
+    Method method2 = Test6.class.getMethod("target2", int.class);
+
+    for (int i = 0; i < 2000; i++) {
+      method1.invoke(null, 0);
+      method2.invoke(null, 0);
+    }
+  }
+
+  public static void target1(int i) {}
+
+  public static void target2(int i) {}
 }
