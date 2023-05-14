@@ -1,9 +1,11 @@
 package com.github.zhuyaotong.jvm;
 
+import java.lang.invoke.ConstantCallSite;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
+import java.util.function.IntConsumer;
 
 public class Singleton {
   private Singleton() {}
@@ -354,6 +356,182 @@ class Foo5 {
       }
 
       mh.invokeExact(new Foo5(), new Object());
+    }
+  }
+}
+
+class Test7 {
+  public static void target(int i) {}
+
+  public static void main(String[] args) throws Exception {
+    long current = System.currentTimeMillis();
+
+    for (int i = 1; i <= 2_000_000_000; i++) {
+
+      if (i % 100_000_000 == 0) {
+        long temp = System.currentTimeMillis();
+        System.out.println(temp - current);
+        current = temp;
+      }
+
+      ((IntConsumer) Test7::target).accept(128);
+      // ((IntConsumer) Test::target.accept(128);
+    }
+  }
+}
+
+class Test8 {
+  public static void target(int i) {}
+
+  public static void main(String[] args) throws Exception {
+    int x = 2;
+
+    long current = System.currentTimeMillis();
+    for (int i = 1; i <= 2_000_000_000; i++) {
+
+      if (i % 100_000_000 == 0) {
+        long temp = System.currentTimeMillis();
+        System.out.println(temp - current);
+        current = temp;
+      }
+
+      ((IntConsumer) j -> Test8.target(x + j)).accept(128);
+    }
+  }
+}
+
+class Test9 {
+  public static void target(int i) {}
+
+  public static void main(String[] args) throws Throwable {
+    MethodHandles.Lookup l = MethodHandles.lookup();
+    MethodType t = MethodType.methodType(void.class, int.class);
+    MethodHandle mh = l.findStatic(Test9.class, "target", t);
+
+    long current = System.currentTimeMillis();
+    for (int i = 1; i <= 2_000_000_000; i++) {
+
+      if (i % 100_000_000 == 0) {
+        long temp = System.currentTimeMillis();
+        System.out.println(temp - current);
+        current = temp;
+      }
+
+      mh.invokeExact(128);
+    }
+  }
+}
+
+class Test10 {
+  public static void target(int i) {}
+
+  static final MethodHandle mh;
+
+  static {
+    try {
+      MethodHandles.Lookup l = MethodHandles.lookup();
+      MethodType t = MethodType.methodType(void.class, int.class);
+      mh = l.findStatic(Test10.class, "target", t);
+    } catch (Throwable e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static void main(String[] args) throws Throwable {
+
+    long current = System.currentTimeMillis();
+
+    for (int i = 1; i <= 2_000_000_000; i++) {
+
+      if (i % 100_000_000 == 0) {
+        long temp = System.currentTimeMillis();
+        System.out.println(temp - current);
+        current = temp;
+      }
+
+      mh.invokeExact(128);
+    }
+  }
+}
+
+class Test11 {
+  public static void target(int i) {}
+
+  public static class MyCallSite {
+
+    public final MethodHandle mh;
+
+    public MyCallSite() {
+      mh = findTarget();
+    }
+
+    private static MethodHandle findTarget() {
+      try {
+        MethodHandles.Lookup l = MethodHandles.lookup();
+        MethodType t = MethodType.methodType(void.class, int.class);
+
+        return l.findStatic(Test11.class, "target", t);
+      } catch (Throwable e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  private static final MyCallSite myCallSite = new MyCallSite();
+
+  public static void main(String[] args) throws Throwable {
+
+    long current = System.currentTimeMillis();
+
+    for (int i = 1; i <= 2_000_000_000; i++) {
+
+      if (i % 100_000_000 == 0) {
+        long temp = System.currentTimeMillis();
+        System.out.println(temp - current);
+        current = temp;
+      }
+
+      myCallSite.mh.invokeExact(128);
+    }
+  }
+}
+
+class Test12 {
+  public static void target(int i) {}
+
+  public static class MyCallSite extends ConstantCallSite {
+
+    public MyCallSite() {
+      super(findTarget());
+    }
+
+    private static MethodHandle findTarget() {
+      try {
+        MethodHandles.Lookup l = MethodHandles.lookup();
+        MethodType t = MethodType.methodType(void.class, int.class);
+
+        return l.findStatic(Test12.class, "target", t);
+      } catch (Throwable e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  public static final MyCallSite myCallSite = new MyCallSite();
+
+  public static void main(String[] args) throws Throwable {
+
+    long current = System.currentTimeMillis();
+
+    for (int i = 1; i <= 2_000_000_000; i++) {
+
+      if (i % 100_000_000 == 0) {
+        long temp = System.currentTimeMillis();
+        System.out.println(temp - current);
+        current = temp;
+      }
+
+      myCallSite.getTarget().invokeExact(128);
     }
   }
 }
