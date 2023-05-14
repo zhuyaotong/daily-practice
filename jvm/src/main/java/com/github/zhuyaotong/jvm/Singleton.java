@@ -1,4 +1,4 @@
-package com.github.zhuyaotong;
+package com.github.zhuyaotong.jvm;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -176,7 +176,7 @@ class Test {
   }
 
   public static void main(String[] args) throws Exception {
-    Class<?> klass = Class.forName("com.github.zhuyaotong.Test");
+    Class<?> klass = Class.forName("com.github.zhuyaotong.jvm.Test");
 
     Method method = klass.getMethod("target", int.class);
 
@@ -192,7 +192,7 @@ class Test2 {
 
   public static void main(String[] args) throws Exception {
 
-    Class<?> klass = Class.forName("com.github.zhuyaotong.Test2");
+    Class<?> klass = Class.forName("com.github.zhuyaotong.jvm.Test2");
 
     Method method = klass.getMethod("target", int.class);
 
@@ -209,7 +209,7 @@ class Test3 {
   }
 
   public static void main(String[] args) throws Exception {
-    Class<?> klass = Class.forName("com.github.zhuyaotong.Test3");
+    Class<?> klass = Class.forName("com.github.zhuyaotong.jvm.Test3");
     Method method = klass.getMethod("target", int.class);
 
     long current = System.currentTimeMillis();
@@ -234,7 +234,7 @@ class Test4 {
   }
 
   public static void main(String[] args) throws Exception {
-    Class<?> klass = Class.forName("com.github.zhuyaotong.Test4");
+    Class<?> klass = Class.forName("com.github.zhuyaotong.jvm.Test4");
     Method method = klass.getMethod("target", int.class);
 
     Object[] arg = new Object[1]; // 在循环外构造参数数组
@@ -263,7 +263,7 @@ class Test5 {
   }
 
   public static void main(String[] args) throws Exception {
-    Class<?> klass = Class.forName("com.github.zhuyaotong.Test5");
+    Class<?> klass = Class.forName("com.github.zhuyaotong.jvm.Test5");
     Method method = klass.getMethod("target", int.class);
     method.setAccessible(true); // 关闭权限检查
 
@@ -288,7 +288,7 @@ class Test6 {
   }
 
   public static void main(String[] args) throws Exception {
-    Class<?> klass = Class.forName("com.github.zhuyaotong.Test6");
+    Class<?> klass = Class.forName("com.github.zhuyaotong.jvm.Test6");
     Method method = klass.getMethod("target", int.class);
     method.setAccessible(true); // 关闭权限检查
     polluteProfile();
