@@ -535,3 +535,50 @@ class Test12 {
     }
   }
 }
+
+class SafepointTest {
+  static double sum = 0;
+
+  public static void foo() {
+    for (int i = 0; i < 0x77777777; i++) {
+      sum += Math.sqrt(i);
+    }
+  }
+
+  public static void bar() {
+    for (int i = 0; i < 50_000_000; i++) {
+      new Object().hashCode();
+    }
+  }
+
+  public static void main(String[] args) {
+    new Thread(SafepointTest::foo).start();
+    new Thread(SafepointTest::bar).start();
+  }
+}
+
+class LifetimeTest {
+  private static final int K = 1024;
+  private static final int M = K * K;
+  private static final int G = K * M;
+
+  private static final int ALIVE_OBJECT_SIZE = 32 * M;
+
+  public static void main(String[] args) {
+    int length = ALIVE_OBJECT_SIZE / 64;
+    ObjectOf64Bytes[] array = new ObjectOf64Bytes[length];
+
+    for (long i = 0; i < G; i++) {
+      array[(int) (i % length)] = new ObjectOf64Bytes();
+    }
+  }
+}
+
+class ObjectOf64Bytes {
+  long placeholder0;
+  long placeholder1;
+  long placeholder2;
+  long placeholder3;
+  long placeholder4;
+  long placeholder5;
+}
