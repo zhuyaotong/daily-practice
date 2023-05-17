@@ -5,6 +5,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.function.IntConsumer;
 
 public class Singleton {
@@ -581,4 +582,35 @@ class ObjectOf64Bytes {
   long placeholder3;
   long placeholder4;
   long placeholder5;
+}
+
+class SynchronizedTest {
+
+  static Lock lock = new Lock();
+  static int counter = 0;
+
+  public static void foo() {
+    synchronized (lock) {
+      counter++;
+    }
+  }
+
+  public void foo2() {
+    var value = 1;
+    var list = new ArrayList<Integer>();
+    list.add(value);
+    //     list.add("1"); 这一句能够编译吗？
+  }
+
+  public static void main(String[] args) throws InterruptedException {
+    // lock.hashCode(); // Step 2
+    // System.identityHashCode(lock); // Step 4
+    for (int i = 0; i < 1_000_000; i++) {
+      foo();
+    }
+  }
+
+  static class Lock {
+    // @Override public int hashCode() { return 0; } // Step 3
+  }
 }
