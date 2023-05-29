@@ -25,6 +25,7 @@
         <module>mybatis-plus</module>
         <module>thinking-in-java</module>
         <module>jvm</module>
+        <module>GcDemo</module>
     </modules>
 
     <properties>
